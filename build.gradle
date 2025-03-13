@@ -1,0 +1,47 @@
+plugins {
+        id 'java'
+        id 'org.springframework.boot' version '3.4.3'
+        id 'io.spring.dependency-management' version '1.1.7'
+}
+
+file("build.properties").withReader {
+    Properties props = new Properties()
+    props.load(it)
+    project.ext.libVersion = props['LIB_VERSION_TAG']
+}
+
+group = "hu.koromsz.common.kafka"
+version = libVersion
+
+java {
+    sourceCompatibility = '21'
+    targetCompatibility = '21'
+}
+
+dependencies {
+
+    implementation 'org.slf4j:slf4j-api:2.0.17'
+    api 'org.springframework.kafka:spring-kafka:3.3.3'
+
+    testImplementation 'org.hamcrest:hamcrest:3.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.12.0'
+    testImplementation 'org.mockito:mockito-core:5.16.0'
+    testImplementation 'org.springframework.kafka:spring-kafka-test:3.3.3'
+}
+
+tasks.named('test') {
+    // Use JUnit Platform for unit tests.
+    useJUnitPlatform()
+}
+
+publishing {
+    publications {
+        library(MavenPublication) {
+            from components.java
+        }
+    }
+}
+
+tasks.register("install") {
+    dependsOn build
+}
